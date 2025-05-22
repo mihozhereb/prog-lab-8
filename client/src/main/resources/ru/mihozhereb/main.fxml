@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ru.mihozhereb.controllers.MainController"
+            style="-fx-background-color: #f4f6f8;">
+
+    <top>
+        <HBox spacing="10">
+            <padding>
+                <Insets top="10" right="15" bottom="10" left="15"/>
+            </padding>
+            <children>
+                <Label fx:id="currentUserLabel"
+                       text="User: —"
+                       style="-fx-font-size: 14px; -fx-font-weight: bold;
+                      -fx-text-fill: white; -fx-background-color: #3b7dd8;
+                      -fx-padding: 4 12; -fx-background-radius: 4;" prefHeight="30"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <ComboBox fx:id="languageComboBox" promptText="Lang" prefHeight="30"/>
+<!--                <TextField fx:id="commandField" promptText="Enter command" -->
+<!--                           HBox.hgrow="ALWAYS" prefHeight="30"/>-->
+<!--                <Button fx:id="sendCommandButton" text="Send" prefHeight="30"/>-->
+            </children>
+        </HBox>
+    </top>
+
+    <center>
+        <SplitPane orientation="VERTICAL">
+            <items>
+                <TableView fx:id="tableView" prefHeight="200"
+                           style="-fx-background-color: white;">
+                    <columns>
+                        <TableColumn fx:id="actionColumn" text="Actions" prefWidth="120"/>
+                    </columns>
+                </TableView>
+            </items>
+        </SplitPane>
+    </center>
+
+    <bottom>
+        <HBox spacing="10">
+            <padding>
+                <Insets top="10" right="15" bottom="10" left="15"/>
+            </padding>
+
+            <Button text="add" style="-fx-font-weight: bold;" prefHeight="30"/>
+            <Button text="add" style="-fx-font-weight: bold;" prefHeight="30"/>
+            <Button text="add" style="-fx-font-weight: bold;" prefHeight="30"/>
+            <Button text="add" style="-fx-font-weight: bold;" prefHeight="30"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
