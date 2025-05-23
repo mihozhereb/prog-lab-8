@@ -19,12 +19,18 @@ public class RemoveByIdCommand implements Command {
 
         int userId = UserManager.getInstance().getUserId(r.login(), r.password());
 
+        int result;
         try {
-            CollectionManager.getInstance().remove(userId, id);
+            result = CollectionManager.getInstance().remove(userId, id);
         } catch (SQLException e) {
             return new Response("Error. " + e.getMessage(), null);
         }
-        return new Response("Done.", null);
+
+        if (result != 0) {
+            return new Response("Done.", null);
+        } else {
+            return new Response("Error.", null);
+        }
     }
 
     @Override

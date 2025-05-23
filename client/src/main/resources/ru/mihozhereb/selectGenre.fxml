@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ru.mihozhereb.controllers.SelectGenreController"
+            prefWidth="300" prefHeight="180"
+            style="-fx-background-color: white;
+                   -fx-border-color: #ccc;
+                   -fx-border-radius: 8;
+                   -fx-background-radius: 8;">
+    <padding>
+        <Insets top="15" right="15" bottom="15" left="15"/>
+    </padding>
+
+    <VBox spacing="15" AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0"
+          AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"
+          alignment="CENTER">
+
+        <Label text="%selectGenre.Choose a genre"
+               style="-fx-font-size: 16px;
+                      -fx-font-weight: bold;
+                      -fx-text-fill: #333;" />
+
+        <ComboBox fx:id="genreComboBox"
+                  prefWidth="200"
+                  style="-fx-background-radius: 4;"/>
+
+        <HBox spacing="10" alignment="CENTER">
+            <Button fx:id="submitButton"
+                    text="%selectGenre.Send"
+                    onAction="#onSubmit"
+                    prefWidth="90"
+                    style="-fx-background-color: #3b7dd8;
+                           -fx-text-fill: white;
+                           -fx-font-weight: bold;
+                           -fx-background-radius: 4;
+                           -fx-padding: 6 12;" />
+            <Button fx:id="cancelButton"
+                    text="%selectGenre.Cancel"
+                    onAction="#onCancel"
+                    prefWidth="90"
+                    style="-fx-background-color: #e0e0e0;
+                           -fx-text-fill: #333;
+                           -fx-background-radius: 4;
+                           -fx-padding: 6 12;" />
+        </HBox>
+    </VBox>
+</AnchorPane>

@@ -8,11 +8,14 @@ import javafx.stage.Stage;
 import ru.mihozhereb.control.Handler;
 import ru.mihozhereb.control.UDPClient;
 import ru.mihozhereb.control.UserData;
+import ru.mihozhereb.controllers.CollectionUpdater;
 import ru.mihozhereb.io.ConsoleWorker;
 
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 public final class Main extends Application {
     private static Stage primaryStage;
@@ -29,6 +32,13 @@ public final class Main extends Application {
     }
 
     public static Handler getHandler() {return handler;}
+
+    public static ResourceBundle getLocale() {
+        return ResourceBundle.getBundle(
+                "ru.mihozhereb.localization.Locale",  // Messages_en_US → base name = Messages
+                Locale.getDefault()
+        );
+    }
 
     private void run(final String... args) {
         try {
@@ -60,19 +70,19 @@ public final class Main extends Application {
     }
 
     public static void showMain() throws IOException {
-        Parent root = FXMLLoader.load(Objects.requireNonNull(Main.class.getResource("main.fxml")));
-        primaryStage.setTitle("MusicBand collection app");
+        FXMLLoader mainLoader = new FXMLLoader(Main.class.getResource("main.fxml"), getLocale());
+        Parent root = mainLoader.load();
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
 
-        Parent graphRoot = FXMLLoader.load(
-            Objects.requireNonNull(Main.class.getResource("graph.fxml"))
-        );
+        FXMLLoader graphLoader = new FXMLLoader(Main.class.getResource("graph.fxml"));
+        Parent graphRoot = graphLoader.load();
         Stage graphStage = new Stage();
-        graphStage.setTitle("Graph");
         graphStage.setScene(new Scene(graphRoot));
         graphStage.setX(primaryStage.getX() + primaryStage.getWidth() + 10);
         graphStage.setY(primaryStage.getY());
         graphStage.show();
+
+        new Thread(new CollectionUpdater(mainLoader.getController(), graphLoader.getController())).start();
     }
 }

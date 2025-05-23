@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class UDPClient {
     private final DatagramSocket ds;
+    private static final ReentrantLock locker = new ReentrantLock();
 
     public UDPClient(String address, int port) throws SocketException {
         ds = new DatagramSocket();
@@ -15,6 +17,8 @@ public class UDPClient {
     }
 
     public Response sendRequest(Request req) throws IOException {
+        locker.lock();
+
         String msg = req.toJson();
 
 //        byte[] outMetaBuffer = ByteBuffer.allocate(4).putInt(msg.getBytes().length).array();
@@ -41,7 +45,8 @@ public class UDPClient {
         DatagramPacket inPacket = new DatagramPacket(inBuffer, inBuffer.length);
         ds.receive(inPacket);
 
-        String res = new String(inPacket.getData());
+//        String res = new String(inPacket.getData());
+        String res = new String(inPacket.getData()).trim();
 
         Response result;
         try {
@@ -49,6 +54,8 @@ public class UDPClient {
         } catch (Exception e) {
             throw new IOException(e);
         }
+
+        locker.unlock();
 
         return result;
     }

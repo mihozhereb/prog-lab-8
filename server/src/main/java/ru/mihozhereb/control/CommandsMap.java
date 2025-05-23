@@ -28,6 +28,8 @@ public class CommandsMap {
                 new PrintFieldAscendingNumberOfParticipantsCommand());
         COMMANDS.put("get_command_type", new GetCommandTypeCommand());
         COMMANDS.put("register", new RegisterCommand());
+        COMMANDS.put("check_user", new CheckUserCommand());
+        COMMANDS.put("get_user_id", new GetUserIdCommand());
     }
 
     /**

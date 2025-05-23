@@ -75,12 +75,13 @@ public final class CollectionManager {
         locker.unlock();
     }
 
-    public void remove(int ownerId, int MBId) throws SQLException {
-        db.removeMusicBand(ownerId, MBId);
+    public int remove(int ownerId, int MBId) throws SQLException {
+        int result = db.removeMusicBand(ownerId, MBId);
         locker.lock();
         COLLECTION.clear();
         COLLECTION.addAll(db.selectMusicBands());
         locker.unlock();
+        return result;
     }
 
     public void remove(int ownerId) throws SQLException {

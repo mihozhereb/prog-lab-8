@@ -21,10 +21,7 @@ public class LoginController {
         try {
             success = UserData.checkUser(login, pass, Main.getHandler().getClient());
         } catch (IOException e) {
-            Alert a = new Alert(Alert.AlertType.ERROR);
-            a.setHeaderText("Ошибка соединения");
-            a.setContentText("Попробуйте позже...");
-            a.showAndWait();
+            Alerts.connectionError();
             return;
         }
         if (success) {
@@ -36,10 +33,7 @@ public class LoginController {
                 ex.printStackTrace();
             }
         } else {
-            Alert a = new Alert(Alert.AlertType.ERROR);
-            a.setHeaderText("Неверный логин или пароль");
-            a.setContentText("Попробуйте снова...");
-            a.showAndWait();
+            Alerts.loginError();
         }
         System.out.println("Login: " + login);
         System.out.println("Password: " + pass);
@@ -53,10 +47,7 @@ public class LoginController {
         try {
             success = UserData.register(login, pass, Main.getHandler().getClient());
         } catch (IOException e) {
-            Alert a = new Alert(Alert.AlertType.ERROR);
-            a.setHeaderText("Ошибка соединения");
-            a.setContentText("Попробуйте позже...");
-            a.showAndWait();
+            Alerts.connectionError();
             return;
         }
         if (success) {
@@ -68,11 +59,7 @@ public class LoginController {
                 ex.printStackTrace();
             }
         } else {
-            Alert a = new Alert(Alert.AlertType.ERROR);
-            a.setTitle("Error");
-            a.setHeaderText("Не удалось зарегистрировать пользователя");
-            a.setContentText("Попробуйте снова...");
-            a.showAndWait();
+            Alerts.registerError();
         }
         System.out.println("Login: " + login);
         System.out.println("Password: " + pass);

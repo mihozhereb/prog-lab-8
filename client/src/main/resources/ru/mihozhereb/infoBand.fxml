@@ -5,8 +5,8 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ru.mihozhereb.controllers.EditBandController"
-            prefWidth="450" prefHeight="600"
+            fx:controller="ru.mihozhereb.controllers.InfoBandController"
+            prefWidth="450" prefHeight="500"
             style="-fx-background-color: #ffffff; -fx-border-color: #ccc; -fx-border-radius: 8; -fx-background-radius: 8;">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
@@ -16,11 +16,12 @@
           AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0">
 
         <!-- Заголовок -->
-        <Label fx:id="titleLabel"
+        <Label text="%BandInfo.Info"
+               fx:id="titleLabel"
                style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
 
         <!-- Основные поля группы -->
-        <TitledPane text="%EditBand.Band" collapsible="false">
+        <TitledPane text="%BandInfo.Band" collapsible="false">
             <content>
                 <GridPane hgap="10" vgap="10">
                     <columnConstraints>
@@ -30,19 +31,22 @@
                     <children>
 
                         <Label text="Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                        <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                        <Label fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
                         <Label text="X:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                        <TextField fx:id="xField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                        <Label fx:id="xField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
                         <Label text="Y:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                        <TextField fx:id="yField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                        <Label fx:id="yField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-                        <Label text="Participants:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                        <TextField fx:id="participantsField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                        <Label text="Creation date:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                        <Label fx:id="creationDateField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-                        <Label text="Genre:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                        <ComboBox fx:id="genreBox" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                        <Label text="Participants:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                        <Label fx:id="participantsField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                        <Label text="Genre:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                        <Label fx:id="genreField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
 
                     </children>
                 </GridPane>
@@ -50,7 +54,7 @@
         </TitledPane>
 
         <!-- Поля фронтмена -->
-        <TitledPane text="%EditBand.Frontman" collapsible="false">
+        <TitledPane text="%BandInfo.Frontman" collapsible="false">
             <content>
                 <GridPane hgap="10" vgap="10">
                     <columnConstraints>
@@ -60,32 +64,32 @@
                     <children>
 
                         <Label text="Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                        <TextField fx:id="fmNameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                        <Label fx:id="fmNameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
                         <Label text="Birthday:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                        <DatePicker fx:id="birthdayPicker" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                        <Label fx:id="birthdayField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
                         <Label text="Height:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                        <TextField fx:id="heightField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                        <Label fx:id="heightField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
                         <Label text="Weight:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                        <TextField fx:id="weightField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                        <Label fx:id="weightField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
                         <Label text="Hair Color:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                        <ComboBox fx:id="hairColorBox" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                        <Label fx:id="hairColorField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
                     </children>
                 </GridPane>
             </content>
         </TitledPane>
 
-        <!-- Кнопки сохранения / отмены -->
         <HBox spacing="10" alignment="CENTER_RIGHT">
-            <Button text="%EditBand.Cancel" onAction="#onCancel"
+            <Button fx:id="editButton" text="%BandInfo.Edit"
+                    onAction="#onEdit"
                     style="-fx-background-color: #f0f0f0; -fx-padding: 6 20;"/>
-            <Button text="%EditBand.Send"
-                    onAction="#onSend"
-                    style="-fx-background-color: #3b7dd8; -fx-text-fill: white; -fx-padding: 6 20;"/>
+            <Button fx:id="deleteButton" text="%BandInfo.Delete"
+                    onAction="#onDelete"
+                    style="-fx-background-color: #B22222; -fx-text-fill: white; -fx-padding: 6 20;"/>
         </HBox>
     </VBox>
 </AnchorPane>

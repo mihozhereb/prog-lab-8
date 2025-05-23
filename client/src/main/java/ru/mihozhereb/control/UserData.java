@@ -35,7 +35,13 @@ public class UserData {
         Response resp = client.sendRequest(new Request(
                 "check_user", "", null, login, DigestUtils.sha3_224Hex(password)
         ));
-//        return resp.response().equals("Done.");
-        return true;
+        return resp.response().equals("Done.");
+    }
+
+    public static int getUserId(UDPClient client) throws IOException {
+        Response resp = client.sendRequest(new Request(
+                "get_user_id", "", null, getUserLogin(), getUserPassword()
+        ));
+        return Integer.parseInt(resp.response());
     }
 }

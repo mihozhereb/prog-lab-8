@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ru.mihozhereb.controllers.SelectFileController"
+            prefWidth="400" prefHeight="180"
+            style="-fx-background-color: white;
+                   -fx-border-color: #ccc;
+                   -fx-border-radius: 8;
+                   -fx-background-radius: 8;">
+    <padding>
+        <Insets top="15" right="15" bottom="15" left="15"/>
+    </padding>
+
+    <VBox spacing="12" AnchorPane.topAnchor="0"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+          AnchorPane.bottomAnchor="0" alignment="CENTER">
+
+        <Label text="%selectFile.Select a file"
+               style="-fx-font-size: 16px;
+                      -fx-font-weight: bold;
+                      -fx-text-fill: #333;" />
+
+        <HBox spacing="8" alignment="CENTER">
+            <TextField fx:id="pathField"
+                       editable="false"
+                       promptText="%selectFile.File path"
+                       prefWidth="260"
+                       style="-fx-background-radius: 4;"/>
+            <Button fx:id="browseButton"
+                    text="%selectFile.Review..."
+                    onAction="#onBrowse"
+                    style="-fx-font-weight: bold;"
+                    prefHeight="30" />
+        </HBox>
+
+        <HBox spacing="10" alignment="CENTER">
+            <Button fx:id="submitButton"
+                    text="%selectFile.Send"
+                    onAction="#onSubmit"
+                    prefWidth="90"
+                    style="-fx-background-color: #3b7dd8;
+                           -fx-text-fill: white;
+                           -fx-font-weight: bold;
+                           -fx-background-radius: 4;
+                           -fx-padding: 6 12;"
+                    disable="true"/>
+            <Button fx:id="cancelButton"
+                    text="%selectFile.Cancel"
+                    onAction="#onCancel"
+                    prefWidth="90"
+                    style="-fx-background-color: #e0e0e0;
+                           -fx-text-fill: #333;
+                           -fx-background-radius: 4;
+                           -fx-padding: 6 12;" />
+        </HBox>
+    </VBox>
+</AnchorPane>

@@ -30,7 +30,7 @@ public class Handler {
         this.client = client;
     }
 
-    private CommandType getCommandType(String command) throws IOException {
+    public CommandType getCommandType(String command) throws IOException {
         String commandType;
 
         commandType = client.sendRequest(

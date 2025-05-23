@@ -97,14 +97,14 @@ public class DbManager {
         statement.executeUpdate();
     }
 
-    public void removeMusicBand(int ownerId, int MBId) throws SQLException {
+    public int removeMusicBand(int ownerId, int MBId) throws SQLException {
         String sql = "DELETE FROM MusicBands WHERE OwnerId = ? AND Id = ?;";
 
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setInt(1, ownerId);
         statement.setInt(2, MBId);
 
-        statement.executeUpdate();
+        return statement.executeUpdate();
     }
 
     public void removeMusicBand(int ownerId) throws SQLException {
