@@ -68,6 +68,9 @@ public final class CollectionManager {
     }
 
     public void add(MusicBand mb) throws SQLException {
+        if (COLLECTION.contains(mb)) {
+            return;
+        }
         db.insertMusicBand(mb);
         locker.lock();
         COLLECTION.clear();
@@ -92,11 +95,12 @@ public final class CollectionManager {
         locker.unlock();
     }
 
-    public void update(MusicBand newMB) throws SQLException {
-        db.updateMusicBand(newMB);
+    public int update(MusicBand newMB, int ownerId) throws SQLException {
+        int result = db.updateMusicBand(newMB, ownerId);
         locker.lock();
         COLLECTION.clear();
         COLLECTION.addAll(db.selectMusicBands());
         locker.unlock();
+        return result;
     }
 }

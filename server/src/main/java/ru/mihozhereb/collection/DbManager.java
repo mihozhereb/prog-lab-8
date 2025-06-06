@@ -116,18 +116,19 @@ public class DbManager {
         statement.executeUpdate();
     }
 
-    public void updateMusicBand(MusicBand newMB) throws SQLException {
+    public int updateMusicBand(MusicBand newMB, int ownerId) throws SQLException {
         String sql = "UPDATE MusicBands SET Name = ?, X = ?, Y = ?, NumberOfParticipants = ?, Genre = ?, " +
                 "PersonName = ?, PersonBirthday = ?, PersonHeight = ?, PersonWeight = ?, PersonHairColor = ?, " +
-                "OwnerId = ? WHERE Id = ?;";
+                "OwnerId = ? WHERE Id = ? AND OwnerId = ?;";
 
         PreparedStatement statement = connection.prepareStatement(sql);
 
         prepareStatement(statement, newMB);
 
         statement.setInt(12, newMB.getId());
+        statement.setInt(13, ownerId);
 
-        statement.executeUpdate();
+        return statement.executeUpdate();
     }
 
     public void insertUser(String login, String password) throws SQLException {

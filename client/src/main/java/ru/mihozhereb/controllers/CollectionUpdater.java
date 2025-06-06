@@ -45,7 +45,7 @@ public class CollectionUpdater implements Runnable {
                 continue;
             }
 
-            for (Iterator<MusicBand> it = main.getTableView().getItems().iterator(); it.hasNext(); ) {
+            for (Iterator<MusicBand> it = main.getTableData().iterator(); it.hasNext(); ) {
                 MusicBand i = it.next();
                 if (!res.elements().contains(i)) {
                     // remove object
@@ -57,9 +57,9 @@ public class CollectionUpdater implements Runnable {
             res.elements().sort(Comparator.comparing(MusicBand::getId));
 
             for (MusicBand i : res.elements()) {
-                if (!main.getTableView().getItems().contains(i)) {
+                if (!main.getTableData().contains(i)) {
                     // add object
-                    main.getTableView().getItems().add(i);
+                    main.getTableData().add(i);
                     graph.drawObject(i);
                 }
             }

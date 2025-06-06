@@ -8,17 +8,22 @@ import ru.mihozhereb.control.Response;
 import java.sql.SQLException;
 import java.util.Comparator;
 
+import java.util.NoSuchElementException;
 import java.util.SortedSet;
 
 public class AddIfMaxCommand implements Command {
     @Override
     public Response execute(Request r) {
-        if (CollectionManager.getInstance().getCollection().last().compareTo(r.element()) < 0) {
+        try {
             try {
+                if (CollectionManager.getInstance().getCollection().last().compareTo(r.element()) < 0) {
+                    CollectionManager.getInstance().add(r.element());
+                }
+            } catch (NoSuchElementException e) {
                 CollectionManager.getInstance().add(r.element());
-            } catch (SQLException e) {
-                return new Response("Error. " + e.getMessage(), null);
             }
+        } catch (SQLException e) {
+            return new Response("Error. " + e.getMessage(), null);
         }
 
         return new Response("Done.", null);

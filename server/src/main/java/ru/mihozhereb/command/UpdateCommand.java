@@ -4,6 +4,7 @@ import ru.mihozhereb.collection.CollectionManager;
 import ru.mihozhereb.collection.model.MusicBand;
 import ru.mihozhereb.control.Request;
 import ru.mihozhereb.control.Response;
+import ru.mihozhereb.control.UserManager;
 
 import java.sql.SQLException;
 import java.util.Objects;
@@ -19,12 +20,20 @@ public class UpdateCommand implements Command {
         }
 
         r.element().setId(id);
+        int userId = UserManager.getInstance().getUserId(r.login(), r.password());
+
+        int result;
         try {
-            CollectionManager.getInstance().update(r.element());
+            result = CollectionManager.getInstance().update(r.element(), userId);
         } catch (SQLException e) {
             return new Response("Error. " + e.getMessage(), null);
         }
-        return new Response("Done.", null);
+
+        if (result != 0) {
+            return new Response("Done.", null);
+        } else {
+            return new Response("Error.", null);
+        }
     }
 
     @Override

@@ -171,10 +171,13 @@ public class EditBandController {
             return;
         }
         System.out.println(res);
-        Alerts.success(res);
-
-        Stage stage = (Stage) titleLabel.getScene().getWindow();
-        stage.close();
+        if (res.response().equals("Done.")) {
+            Alerts.success(res);
+            Stage stage = (Stage) titleLabel.getScene().getWindow();
+            stage.close();
+        } else {
+            Alerts.ownershipError();
+        }
     }
 
     @FXML

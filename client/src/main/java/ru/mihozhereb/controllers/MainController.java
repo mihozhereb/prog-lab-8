@@ -3,16 +3,24 @@ package ru.mihozhereb.controllers;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -29,6 +37,8 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class MainController {
     @FXML private Button printAscendingButton;
@@ -47,6 +57,11 @@ public class MainController {
     @FXML private TableView<MusicBand> tableView;
     @FXML private TableColumn<MusicBand, Void> actionColumn;
 
+    private final ObservableList<MusicBand> masterData = FXCollections.observableArrayList();
+    private FilteredList<MusicBand> filteredData;
+    private SortedList<MusicBand> sortedData;
+    private final Map<TableColumn<MusicBand, ?>, Predicate<MusicBand>> columnFilters = new HashMap<>();
+
     private static final Map<String, Locale> langMap = new LinkedHashMap<>();
     static {
         langMap.put("Русский",              new Locale("ru", "RU"));
@@ -56,15 +71,16 @@ public class MainController {
         langMap.put("Español (Honduras)",   new Locale("es", "HN"));
     }
 
-    public TableView<MusicBand> getTableView() {
-        return tableView;
+    public ObservableList<MusicBand> getTableData() {
+        return masterData;
     }
 
     @FXML
     public void initialize() {
         setupLangBox();
         setupUserLabel();
-        buildTableColumns();
+        initTableData();
+        buildFilterableColumns();
         initActionColumn();
         setLocalization();
     }
@@ -114,40 +130,197 @@ public class MainController {
         );
     }
 
-    private void buildTableColumns() {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(Locale.getDefault());
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(Locale.getDefault());
+    private void initTableData() {
+        filteredData = new FilteredList<>(masterData, b -> true);
 
-        TableColumn<MusicBand,Integer> idCol = new TableColumn<>("ID");
-        idCol.setCellValueFactory(c-> new SimpleIntegerProperty(c.getValue().getId()).asObject());
-        TableColumn<MusicBand,String> nameCol = new TableColumn<>("Name");
-        nameCol.setCellValueFactory(c-> new SimpleStringProperty(c.getValue().getName()));
-        TableColumn<MusicBand,Double> xCol = new TableColumn<>("X");
-        xCol.setCellValueFactory(c-> new SimpleDoubleProperty(c.getValue().getCoordinates().getX()).asObject());
-        TableColumn<MusicBand,Float> yCol = new TableColumn<>("Y");
-        yCol.setCellValueFactory(c-> new SimpleFloatProperty(c.getValue().getCoordinates().getY()).asObject());
-        TableColumn<MusicBand,String> dateCol = new TableColumn<>("Created");
-        dateCol.setCellValueFactory(c-> new SimpleStringProperty(
-                c.getValue().getCreationDate().format(dateTimeFormatter)));
-        TableColumn<MusicBand,Long> numCol = new TableColumn<>("Participants");
-        numCol.setCellValueFactory(c-> new SimpleLongProperty(c.getValue().getNumberOfParticipants()).asObject());
-        TableColumn<MusicBand,MusicGenre> genreCol = new TableColumn<>("Genre");
-        genreCol.setCellValueFactory(c-> new SimpleObjectProperty<>(c.getValue().getGenre()));
+        sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(tableView.comparatorProperty());
+        tableView.setItems(sortedData);
+    }
 
-        TableColumn<MusicBand,String> fmName = new TableColumn<>("Frontman");
-        fmName.setCellValueFactory(c-> new SimpleStringProperty(c.getValue().getFrontMan().getName()));
-        TableColumn<MusicBand,String> fmBday = new TableColumn<>("Birthday");
-        fmBday.setCellValueFactory(c-> new SimpleStringProperty(c.getValue().getFrontMan().getBirthday().format(dateFormatter)));
-        TableColumn<MusicBand,Double> fmHeight = new TableColumn<>("Height");
-        fmHeight.setCellValueFactory(c-> new SimpleObjectProperty<>(c.getValue().getFrontMan().getHeight()));
-        TableColumn<MusicBand,Long> fmWeight = new TableColumn<>("Weight");
-        fmWeight.setCellValueFactory(c-> new SimpleLongProperty(c.getValue().getFrontMan().getWeight()).asObject());
-        TableColumn<MusicBand,Color> fmColor = new TableColumn<>("Hair");
-        fmColor.setCellValueFactory(c-> new SimpleObjectProperty<>(c.getValue().getFrontMan().getHairColor()));
+    private <T> TableColumn<MusicBand, T> makeFilterableColumn(
+            String title,
+            Function<MusicBand, T> valueExtractor,
+            Function<T, String> toStringConverter,
+            Callback<TableColumn.CellDataFeatures<MusicBand, T>, ObservableValue<T>> cellValueFactory
+    ) {
+        // 1) Создаём пустую колонку (без текста)
+        TableColumn<MusicBand, T> col = new TableColumn<>();
+        col.setCellValueFactory(cellValueFactory);
 
+        // 2) Label с названием: берем дефолтный класс "column-header", но убираем у него фон
+        Label lbl = new Label(title);
+        lbl.getStyleClass().add("column-header");
+        lbl.setStyle(
+                "-fx-background-color: transparent; " + // фон делаем прозрачным
+                        "-fx-border-color: transparent; " +     // рамку тоже убираем
+                        "-fx-padding: 0 0 0 0;"                  // обнуляем внутренние отступы
+        );
+        // При желании можно выставить фиксированную высоту, но обычно достаточно CSS-класса:
+        lbl.setMinHeight(Region.USE_PREF_SIZE);
+        lbl.setPrefHeight(Region.USE_COMPUTED_SIZE);
+        lbl.setMaxHeight(Region.USE_PREF_SIZE);
+
+        // 3) TextField для фильтрации, сразу под Label
+        TextField filterField = new TextField();
+        filterField.setPromptText("…");
+        filterField.setMaxWidth(Double.MAX_VALUE);
+        filterField.setStyle(
+                "-fx-background-color: Snow; " +            // обычный белый фон
+                        "-fx-border-color: transparent; " +                 // тонкая нижняя граница
+                        "-fx-border-width: 0 0 0 0; " +               // только снизу
+                        "-fx-padding: 2 4 2 4;"                       // немного padding внутри
+        );
+
+        // 4) Listener для фильтрации через Stream API
+        filterField.textProperty().addListener((obs, oldV, newV) -> {
+            if (newV == null || newV.isEmpty()) {
+                columnFilters.remove(col);
+            } else {
+                String lower = newV.toLowerCase();
+                columnFilters.put(col, band -> {
+                    T cellValue = valueExtractor.apply(band);
+                    String cellText = toStringConverter.apply(cellValue);
+                    return cellText != null && cellText.toLowerCase().contains(lower);
+                });
+            }
+            // Пересобираем Predicate сразу по всем полям
+            filteredData.setPredicate(band ->
+                    columnFilters.values().stream()
+                            .allMatch(pred -> pred.test(band))
+            );
+        });
+
+        // 5) Собираем VBox: сначала Label (прозрачный, но с дефолтным фоном шапки), затем TextField
+        VBox headerBox = new VBox();
+        headerBox.setSpacing(0);
+        headerBox.setFillWidth(true);
+        headerBox.setPadding(new Insets(2, 8, 2, 2));
+        headerBox.getChildren().addAll(lbl, filterField);
+        VBox.setVgrow(filterField, Priority.ALWAYS);
+
+        // 6) Подменяем стандартный текст колонки на нашу графику
+        col.setText(null);
+        col.setGraphic(headerBox);
+
+        return col;
+    }
+
+    private void buildFilterableColumns() {
+        // 1) Форматтеры с учётом текущей локали
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+                .ofLocalizedDateTime(FormatStyle.SHORT)
+                .withLocale(Locale.getDefault());
+        DateTimeFormatter dateFormatter = DateTimeFormatter
+                .ofLocalizedDate(FormatStyle.SHORT)
+                .withLocale(Locale.getDefault());
+
+        // 2) Каждая колонка создаётся через makeFilterableColumn:
+
+        // ID (Integer → String)
+        TableColumn<MusicBand, Integer> idCol = makeFilterableColumn(
+                "ID",
+                MusicBand::getId,
+                i -> i == null ? "" : i.toString(),
+                cd -> new SimpleIntegerProperty(cd.getValue().getId()).asObject()
+        );
+
+        // Name (String → String)
+        TableColumn<MusicBand, String> nameCol = makeFilterableColumn(
+                "Name",
+                MusicBand::getName,
+                s -> s == null ? "" : s,
+                cd -> new SimpleStringProperty(cd.getValue().getName())
+        );
+
+        // X (Double → String)
+        TableColumn<MusicBand, Double> xCol = makeFilterableColumn(
+                "X",
+                mb -> mb.getCoordinates().getX(),
+                d -> d == null ? "" : d.toString(),
+                cd -> new SimpleDoubleProperty(cd.getValue().getCoordinates().getX()).asObject()
+        );
+
+        // Y (Float → String) — у вас это Integer, но в примере Float
+        TableColumn<MusicBand, Float> yCol = makeFilterableColumn(
+                "Y",
+                mb -> mb.getCoordinates().getY(),
+                f -> f == null ? "" : f.toString(),
+                cd -> new SimpleFloatProperty(cd.getValue().getCoordinates().getY()).asObject()
+        );
+
+        // Created (String уже отформатированный)
+        TableColumn<MusicBand, String> dateCol = makeFilterableColumn(
+                "Created",
+                mb -> mb.getCreationDate().format(dateTimeFormatter),
+                s -> s,
+                cd -> new SimpleStringProperty(
+                        cd.getValue().getCreationDate().format(dateTimeFormatter)
+                )
+        );
+
+        // Participants (Long → String)
+        TableColumn<MusicBand, Long> numCol = makeFilterableColumn(
+                "Participants",
+                MusicBand::getNumberOfParticipants,
+                l -> l == null ? "" : l.toString(),
+                cd -> new SimpleLongProperty(cd.getValue().getNumberOfParticipants()).asObject()
+        );
+
+        // Genre (MusicGenre → String)
+        TableColumn<MusicBand, MusicGenre> genreCol = makeFilterableColumn(
+                "Genre",
+                MusicBand::getGenre,
+                mg -> mg == null ? "" : mg.name(),
+                cd -> new SimpleObjectProperty<>(cd.getValue().getGenre())
+        );
+
+        // Frontman Name (String → String)
+        TableColumn<MusicBand, String> fmName = makeFilterableColumn(
+                "Frontman",
+                mb -> mb.getFrontMan().getName(),
+                s -> s == null ? "" : s,
+                cd -> new SimpleStringProperty(cd.getValue().getFrontMan().getName())
+        );
+
+        // Frontman Birthday (String отформатированный)
+        TableColumn<MusicBand, String> fmBday = makeFilterableColumn(
+                "Birthday",
+                mb -> mb.getFrontMan().getBirthday().format(dateFormatter),
+                s -> s,
+                cd -> new SimpleStringProperty(
+                        cd.getValue().getFrontMan().getBirthday().format(dateFormatter)
+                )
+        );
+
+        // Frontman Height (Double → String)
+        TableColumn<MusicBand, Double> fmHeight = makeFilterableColumn(
+                "Height",
+                mb -> mb.getFrontMan().getHeight(),
+                l -> l == null ? "" : l.toString(),
+                cd -> new SimpleObjectProperty<>(cd.getValue().getFrontMan().getHeight())
+        );
+
+        // Frontman Weight (Integer → String)
+        TableColumn<MusicBand, Integer> fmWeight = makeFilterableColumn(
+                "Weight",
+                mb -> mb.getFrontMan().getWeight(),
+                l -> l == null ? "" : l.toString(),
+                cd -> new SimpleIntegerProperty(cd.getValue().getFrontMan().getWeight()).asObject()
+        );
+
+        // Frontman Hair (Color → String)
+        TableColumn<MusicBand, Color> fmColor = makeFilterableColumn(
+                "Hair",
+                mb -> mb.getFrontMan().getHairColor(),
+                c -> c == null ? "" : c.name(),
+                cd -> new SimpleObjectProperty<>(cd.getValue().getFrontMan().getHairColor())
+        );
+
+        // 3) Подставляем все колонки в таблицу:
         tableView.getColumns().setAll(
-                idCol,nameCol,xCol,yCol,dateCol,numCol,genreCol,
-                fmName,fmBday,fmHeight,fmWeight,fmColor
+                idCol, nameCol, xCol, yCol, dateCol, numCol, genreCol,
+                fmName, fmBday, fmHeight, fmWeight, fmColor
         );
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }

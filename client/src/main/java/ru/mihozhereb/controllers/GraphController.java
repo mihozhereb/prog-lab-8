@@ -56,7 +56,8 @@ public class GraphController {
                 GraphicsContext gc = canvas.getGraphicsContext2D();
                 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
                 drawCanvas();
-                for (DrawableBand db : items) {
+                for (Iterator<DrawableBand> it = items.iterator(); it.hasNext(); ) {
+                    DrawableBand db = it.next();
                     double a = db.alphaProperty().get();
                     gc.setGlobalAlpha(a);
                     drawBand(gc, db.getBand());

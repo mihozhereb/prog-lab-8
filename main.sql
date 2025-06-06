@@ -1,12 +1,6 @@
 DROP TABLE IF EXISTS Users CASCADE;
 DROP TABLE IF EXISTS MusicBands CASCADE;
 
---DROP TYPE IF EXISTS MusicGenre;
---DROP TYPE IF EXISTS Color;
-
---CREATE TYPE MusicGenre AS ENUM ('PSYCHEDELIC_ROCK', 'BLUES', 'MATH_ROCK', 'POST_ROCK', 'POST_PUNK');
---CREATE TYPE Color AS ENUM ('BLUE', 'ORANGE', 'WHITE');
-
 CREATE TABLE Users(
     UserId SERIAL PRIMARY KEY NOT NULL,
     Login VARCHAR(64) UNIQUE NOT NULL,
@@ -26,5 +20,8 @@ CREATE TABLE MusicBands(
     PersonHeight DECIMAL CHECK ( PersonHeight > 0 ),
     PersonWeight INT NOT NULL CHECK ( PersonWeight > 0 ),
     PersonHairColor VARCHAR(64),
-    OwnerId INT NOT NULL REFERENCES Users(UserId)
+    OwnerId INT NOT NULL REFERENCES Users(UserId),
+
+    CONSTRAINT band_equiv UNIQUE(Name, X, Y, NumberOfParticipants, Genre,
+    PersonName, PersonBirthday, PersonHeight, PersonWeight, PersonHairColor)
 );

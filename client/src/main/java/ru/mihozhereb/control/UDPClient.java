@@ -12,6 +12,7 @@ public class UDPClient {
 
     public UDPClient(String address, int port) throws SocketException {
         ds = new DatagramSocket();
+//        ds.connect(new InetSocketAddress("helios.cs.ifmo.ru", port));
         ds.connect(new InetSocketAddress(address, port));
         ds.setSoTimeout(10000);
     }

@@ -43,6 +43,10 @@ public class LoginController {
     private void onRegister() {
         String login = usernameField.getText();
         String pass = passwordField.getText();
+        if (login.isEmpty() || pass.isEmpty()) {
+            Alerts.registerError();
+            return;
+        }
         boolean success;
         try {
             success = UserData.register(login, pass, Main.getHandler().getClient());

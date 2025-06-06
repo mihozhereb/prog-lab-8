@@ -47,18 +47,6 @@ public final class Main extends Application {
             throw new RuntimeException(e);
         }
 
-//        try (ConsoleWorker consoleWorker = new ConsoleWorker()) {
-//            String line;
-//            while ((line = consoleWorker.read()) != null && !line.equals("exit")) {
-//                try {
-//                    consoleWorker.write(handler.handle(line, consoleWorker));
-//                } catch (IOException e) {
-//                    consoleWorker.writeLn("Connection error. Retry later...");
-//                }
-//
-//            }
-//        }
-
         launch(args);
     }
 
